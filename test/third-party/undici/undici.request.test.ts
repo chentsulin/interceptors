@@ -6,13 +6,13 @@ import { RequestHandler } from 'express-serve-static-core'
 import { ServerApi, createServer } from '@open-draft/test-server'
 import { createInterceptor } from '../../../src'
 import { IsomorphicRequest } from '../../../src/createInterceptor'
-import { interceptClientRequest } from '../../../src/interceptors/ClientRequest'
+import { interceptUndiciRequest } from '../../../src/interceptors/undici'
 
 let requests: IsomorphicRequest[] = []
 let httpServer: ServerApi
 
 const interceptor = createInterceptor({
-  modules: [interceptClientRequest],
+  modules: [interceptUndiciRequest],
   resolver(request) {
     requests.push(request)
   },
@@ -45,7 +45,7 @@ afterAll(async () => {
 })
 
 test('intercepts a HEAD request', async () => {
-  const url = httpServer.https.makeUrl('/user?id=123')
+  const url = httpServer.http.makeUrl('/user?id=123')
   await undici.request(url, {
     method: 'HEAD',
     headers: {
@@ -58,13 +58,13 @@ test('intercepts a HEAD request', async () => {
   const [request] = requests
   expect(request.method).toEqual('HEAD')
   expect(request.url).toBeInstanceOf(URL)
-  expect(request.url.href).toEqual(httpServer.https.makeUrl('/user?id=123'))
+  expect(request.url.href).toEqual(httpServer.http.makeUrl('/user?id=123'))
   expect(request.url.searchParams.get('id')).toEqual('123')
   expect(request.headers.get('x-custom-header')).toEqual('yes')
 })
 
 test('intercepts a GET request', async () => {
-  const url = httpServer.https.makeUrl('/user?id=123')
+  const url = httpServer.http.makeUrl('/user?id=123')
   await undici.request(url, {
     method: 'GET',
     headers: {
@@ -77,13 +77,13 @@ test('intercepts a GET request', async () => {
   const [request] = requests
   expect(request.method).toEqual('GET')
   expect(request.url).toBeInstanceOf(URL)
-  expect(request.url.href).toEqual(httpServer.https.makeUrl('/user?id=123'))
+  expect(request.url.href).toEqual(httpServer.http.makeUrl('/user?id=123'))
   expect(request.url.searchParams.get('id')).toEqual('123')
   expect(request.headers.get('x-custom-header')).toEqual('yes')
 })
 
 test('intercepts a POST request', async () => {
-  const url = httpServer.https.makeUrl('/user?id=123')
+  const url = httpServer.http.makeUrl('/user?id=123')
   await undici.request(url, {
     method: 'POST',
     headers: {
@@ -97,14 +97,14 @@ test('intercepts a POST request', async () => {
   const [request] = requests
   expect(request.method).toEqual('POST')
   expect(request.url).toBeInstanceOf(URL)
-  expect(request.url.href).toEqual(httpServer.https.makeUrl('/user?id=123'))
+  expect(request.url.href).toEqual(httpServer.http.makeUrl('/user?id=123'))
   expect(request.url.searchParams.get('id')).toEqual('123')
   expect(request.headers.get('x-custom-header')).toEqual('yes')
   expect(request.body).toEqual('post-payload')
 })
 
 test('intercepts a PUT request', async () => {
-  const url = httpServer.https.makeUrl('/user?id=123')
+  const url = httpServer.http.makeUrl('/user?id=123')
   await undici.request(url, {
     method: 'PUT',
     headers: {
@@ -118,14 +118,14 @@ test('intercepts a PUT request', async () => {
   const [request] = requests
   expect(request.method).toEqual('PUT')
   expect(request.url).toBeInstanceOf(URL)
-  expect(request.url.href).toEqual(httpServer.https.makeUrl('/user?id=123'))
+  expect(request.url.href).toEqual(httpServer.http.makeUrl('/user?id=123'))
   expect(request.url.searchParams.get('id')).toEqual('123')
   expect(request.headers.get('x-custom-header')).toEqual('yes')
   expect(request.body).toEqual('put-payload')
 })
 
 test('intercepts a PATCH request', async () => {
-  const url = httpServer.https.makeUrl('/user?id=123')
+  const url = httpServer.http.makeUrl('/user?id=123')
   await undici.request(url, {
     method: 'PATCH',
     headers: {
@@ -139,14 +139,14 @@ test('intercepts a PATCH request', async () => {
   const [request] = requests
   expect(request.method).toEqual('PATCH')
   expect(request.url).toBeInstanceOf(URL)
-  expect(request.url.href).toEqual(httpServer.https.makeUrl('/user?id=123'))
+  expect(request.url.href).toEqual(httpServer.http.makeUrl('/user?id=123'))
   expect(request.url.searchParams.get('id')).toEqual('123')
   expect(request.headers.get('x-custom-header')).toEqual('yes')
   expect(request.body).toEqual('patch-payload')
 })
 
 test('intercepts a DELETE request', async () => {
-  const url = httpServer.https.makeUrl('/user?id=123')
+  const url = httpServer.http.makeUrl('/user?id=123')
   await undici.request(url, {
     method: 'DELETE',
     headers: {
@@ -159,7 +159,7 @@ test('intercepts a DELETE request', async () => {
   const [request] = requests
   expect(request.method).toEqual('DELETE')
   expect(request.url).toBeInstanceOf(URL)
-  expect(request.url.href).toEqual(httpServer.https.makeUrl('/user?id=123'))
+  expect(request.url.href).toEqual(httpServer.http.makeUrl('/user?id=123'))
   expect(request.url.searchParams.get('id')).toEqual('123')
   expect(request.headers.get('x-custom-header')).toEqual('yes')
 })

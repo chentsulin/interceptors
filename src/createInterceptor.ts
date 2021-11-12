@@ -1,6 +1,7 @@
 import { IncomingMessage } from 'http'
 import { HeadersObject, Headers } from 'headers-utils'
 import { StrictEventEmitter } from 'strict-event-emitter'
+import { Dispatcher } from 'undici'
 
 export type Interceptor = (
   observer: Observer,
@@ -49,7 +50,7 @@ export interface InterceptorEventsMap {
 
 export type Resolver = (
   request: IsomorphicRequest,
-  ref: IncomingMessage | XMLHttpRequest | Request
+  ref: IncomingMessage | XMLHttpRequest | Request | Dispatcher.DispatchHandlers
 ) => MockedResponse | Promise<MockedResponse | void> | void
 
 export interface InterceptorOptions {
